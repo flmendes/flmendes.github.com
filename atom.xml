@@ -4,7 +4,7 @@
   <title><![CDATA[Flávio Mendes ~ Blog]]></title>
   <link href="http://flmendes.github.com/atom.xml" rel="self"/>
   <link href="http://flmendes.github.com/"/>
-  <updated>2013-03-13T18:03:20-03:00</updated>
+  <updated>2013-03-13T18:48:50-03:00</updated>
   <id>http://flmendes.github.com/</id>
   <author>
     <name><![CDATA[Flávio Luiz Mendes]]></name>
@@ -12,5 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Novo endereço do Blog]]></title>
+    <link href="http://flmendes.github.com/blog/2013/03/13/novo-endereco-do-blog/"/>
+    <updated>2013-03-13T18:20:00-03:00</updated>
+    <id>http://flmendes.github.com/blog/2013/03/13/novo-endereco-do-blog</id>
+    <content type="html"><![CDATA[<p>Com a <a href="http://blog.posterous.com/thanks-from-posterous">morte do Posterous</a>, resolvi migrar o blog para o github, seguindo algumas orientações do <a href="http://italoqueiroz.github.com/">&#8220;Monolo&#8221;</a>, instalei o <a href="http://octopress.org/">octopress</a>.</p>
+
+<p>Com o octopress instalado, faltou migrar os dados do posterous, para esta tarefa encontrei alguns posts interessantes:</p>
+
+<ul>
+<li><a href="http://blog.justin.kelly.org.au/moved-from-posterous-to-octopress-plus-p-dot-ostero-dot-us/">Moved From Posterous to Octopress + p.ostero.us</a></li>
+<li><a href="http://mockingeye.com/blog/2012/08/01/migrated-from-posterous-to-octopress/">Migrated From Posterous to Octopress</a></li>
+</ul>
+
+
+<p>Não gostei do resultado obtido, vou esperar o backup do posterous. Se alguém teve sucesso com a migração, por favor me avise.</p>
+]]></content>
+  </entry>
   
 </feed>
