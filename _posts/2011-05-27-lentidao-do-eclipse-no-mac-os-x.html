@@ -1,0 +1,40 @@
+---
+layout: post
+title: Lentidão do Eclipse no Mac OS X
+published: true
+date: 2011-05-27
+categories: []
+posterous_url: http://flmendes.posterous.com/lentidao-do-eclipse-no-mac-os-x
+posterous_slug: lentidao-do-eclipse-no-mac-os-x
+---
+<p>Salve galera, depois de anos sonhando com um Mac Book Pro, a uns meses atrás eu consegui realizar esse sonho.</p>
+
+<p>Mas quando comecei a trabalhar com o notebook, o sonho virou um pesadelo. O miserável do eclipse travava toda hora.</p>
+
+<p>Depois de um tempo pesquisando, achei uma dica interessante que deixou o eclipse mais rápido.</p>
+
+<p>No diretório raiz do eclipse existe um arquivo chamado eclipse.ini, este arquivo é responsável pelas configurações básicas, do eclipse.</p>
+
+<p>As configurações de &ldquo;fábrica&rdquo; são modestas, então é necessário alterar alguns detalhes.</p>
+
+<p>O eclipse instalado em minha máquina é a versão Helios, a pasta eclipse foi movida para o diretório Applications, então o path do arquivo é o seguinte:</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>/Applications/eclipse/Eclipse.app/Contents/MacOS/eclipse.ini</pre></div>
+</div>
+
+
+<p>Edite o arquivo acima e altere as seguintes propriedades:</p>
+
+<div class="CodeRay">
+  <div class="code"><pre>-XX:MaxPermSize=512m
+-Xms128m
+-Xmx1024m
+-Dosgi.requiredJavaVersion=1.6</pre></div>
+</div>
+
+
+<p>O Xms é o tamanho inicial da memoria Heap do Java e o Xmx é o tamanho máximo. O -Dosgi.requiredJavaVersion é a versão da JVM utilizada.</p>
+
+<p>Essa configuração serve para qualquer sistema operacional, a única diferença é o caminho do arquivo eclipse.ini. Essa configuração também pode ser feita
+no Zend Studio, Aptana, Eclipse PDT etc.</p>

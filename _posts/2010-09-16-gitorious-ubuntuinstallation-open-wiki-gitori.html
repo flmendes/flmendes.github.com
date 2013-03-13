@@ -1,0 +1,440 @@
+---
+layout: post
+title: Gitorious - UbuntuInstallation - Open wiki - Gitorious
+published: true
+date: 2010-09-16
+categories: []
+posterous_url: http://flmendes.posterous.com/gitorious-ubuntuinstallation-open-wiki-gitori
+posterous_slug: gitorious-ubuntuinstallation-open-wiki-gitori
+---
+<div class="posterous_bookmarklet_entry">
+      <blockquote><div><p>Note: I can confirm that this documentation works with Ubuntu Server 9.10, another documentation can be found here: <a href="http://cjohansen.no/en/ruby/setting_up_gitorious_on_your_own_server">Setting up gitorious on your own server</a></p>
+
+<p>The following steps should take you from a freshly installed copy of Ubuntu Server 9.10 to a fully functioning Gitorious server.</p>
+
+<h3>Install packages</h3>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>aptitude update
+aptitude install build-essential zlib1g-dev tcl-dev libexpat-dev libcurl4-openssl-dev postfix apache2 \  
+    mysql-server mysql-client  apg geoip-bin libgeoip1 libgeoip-dev sqlite3 libsqlite3-dev imagemagick \  
+    libpcre3 libpcre3-dev zlib1g zlib1g-dev libyaml-dev libmysqlclient15-dev apache2-dev libonig-dev \  
+    ruby-dev rubygems  libopenssl-ruby phpmyadmin libdbd-mysql-ruby libmysql-ruby  libmagick  -dev \  
+    zip unzip memcached git-core git-svn git-doc git-cvs irb</pre></div>
+</div>
+</div>
+</div>
+
+
+<h3>Install Ruby gems</h3>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>gem install -b --no-ri --no-rdoc rmagick chronic geoip daemons hoe echoe ruby-yadis ruby-openid \
+    mime-types diff-lcs json rack ruby-hmac rake stompserver passenger rails  
+gem install -b --no-ri --no-rdoc -v 1.3.1.1 rdiscount  
+gem install -b --no-ri --no-rdoc -v 1.1 stomp
+
+ln -s /var/lib/gems/1.8/bin/rake /usr/bin    
+ln -s /var/lib/gems/1.8/bin/stompserver /usr/bin</pre></div>
+</div>
+</div>
+</div>
+
+
+<h3>Install Sphinx</h3>
+
+<p>Download source from <a href="http://www.sphinxsearch.com">www.sphinxsearch.com</a> (currently <code>http://sphinxsearch.com/downloads/sphinx-0.9.8.1.tar.gz</code>)<br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>./configure --prefix=/usr &amp;&amp; make all install</pre></div>
+</div>
+</div>
+</div>
+
+
+<h3>Fetch Gitorious</h3>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>git clone git://gitorious.org/gitorious/mainline.git /var/www/gitorious</pre></div>
+</div>
+</div>
+</div>
+
+
+<p>— or —  <br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>git clone http://git.gitorious.org/gitorious/mainline.git /var/www/gitorious
+
+ln -s /var/www/gitorious/script/gitorious /usr/bin</pre></div>
+</div>
+</div>
+</div>
+
+
+<h3>Configure services</h3>
+
+<ul>
+<li>Copy Sphinx and git-daemon scripts from gitorious/doc/templates/ubuntu to /etc/init.d; change Ruby interpreter in git-daemon to /usr/bin/ruby<br />
+</li>
+<li>Create stomp init script (see Files below)<br />
+</li>
+<li>Create poller init script (see Files below)<br />
+</li>
+<li>Copy gitorious-logrotate from gitorious/doc/templates/ubuntu to /etc/logrotate.d/gitorious<br />
+</li>
+<li>Make init scripts run at startup<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>chmod 755 /etc/init.d/git-ultrasphinx /etc/init.d/git-daemon /etc/init.d/stomp /etc/init.d/git-poller
+  update-rc.d stomp defaults  
+  update-rc.d git-daemon defaults  
+  update-rc.d git-ultrasphinx defaults  
+  update-rc.d git-poller defaults</pre></div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+
+
+<h3>Configure Apache</h3>
+
+<ul>
+<li>Install Passenger<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>/var/lib/gems/1.8/bin/passenger-install-apache2-module</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>Create /etc/apache2/mods-available/passenger.load:<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>LoadModule passenger_module /var/lib/gems/1.8/gems/passenger-2.2.10/ext/apache2/mod_passenger.so
+  PassengerRoot /var/lib/gems/1.8/gems/passenger-2.2.10  
+  PassengerRuby /usr/bin/ruby1.8</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>Enable needed modules<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>a2enmod passenger
+  a2enmod rewrite  
+  a2enmod ssl</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>Enable the SSL site<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>a2ensite default-ssl</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>Restart Apache<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>/etc/init.d/apache2 restart</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>Add a git user to MySQL: browse to <a href="https://server/phpmyadmin">https://server/phpmyadmin</a>, to Privileges, and create a new “git” user with global create privileges. Also give it all privileges on gitorious_production.<br />
+</li>
+<li>Create /etc/apache2/sites-available/gitorious (see Files below)<br />
+</li>
+<li>Create /etc/apache2/sites-available/gitorious-ssl (see Files below)<br />
+</li>
+<li>Disable the default sites and enable the Gitorious sites<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>a2dissite default
+  a2dissite default-ssl    
+  a2ensite gitorious    
+  a2ensite gitorious-ssl</pre></div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+
+
+<h3>Configure Gitorious</h3>
+
+<ul>
+<li><p>Run the following</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>adduser --system --home /var/www/gitorious/ --no-create-home --group --shell /bin/bash git
+chown -R git:git /var/www/gitorious    
+
+su - git    
+mkdir .ssh    
+touch .ssh/authorized_keys    
+chmod 700 .ssh    
+chmod 600 .ssh/authorized_keys    
+mkdir tmp/pids    
+mkdir repositories    
+mkdir tarballs    
+
+cp config/database.sample.yml config/database.yml    
+cp config/gitorious.sample.yml config/gitorious.yml    
+cp config/broker.yml.example config/broker.yml</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>Edit config/database.yml: Remove every section but production<br />
+</li>
+<li>Edit config/gitorious.yml:  Remove every section but production<br />
+
+
+<ul>
+<li>repository path should be something like /var/www/gitorious/repositories<br />
+</li>
+<li>gitorious_client_port should be 80<br />
+</li>
+<li>gitorious_host needs to be the exact hostname that clients will use (cookies get messed up otherwise)<br />
+</li>
+<li>archive_cache_dir should be something like /var/www/gitorious/tarballs<br />
+</li>
+<li>archive_work_dir should be something like /tmp/tarballs-work<br />
+</li>
+<li>hide_http_clone_urls should be true (they require extra unknown setup to work)<br />
+</li>
+<li>is_gitorious_dot_org should be false<br />
+</li>
+</ul>
+</li>
+<li><p>Run the following<br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>export RAILS_ENV=production
+rake db:create    
+rake db:migrate    
+rake ultrasphinx:bootstrap
+
+crontab -e    
+    * * * * * cd /var/www/gitorious &amp;&amp; /usr/bin/rake ultrasphinx:index RAILS_ENV=production</pre></div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+
+
+<h3>Finish</h3>
+
+<ul>
+<li><p>As root, <code>/etc/init.d/apache2 restart</code></p></li>
+<li><p>Create a Admin User as User ‘git’:<br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>env RAILS_ENV=production ruby1.8 script/create_admin</pre></div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+
+
+<h3>Console User Administration</h3>
+
+<ul>
+<li>Delete a User<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>env RAILS_ENV=production ruby1.8 script/console
+ &gt; user = User.find_by_login &quot;Username&quot;  
+ &gt; user.destroy</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>Create Roles<br />
+
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>env RAILS_ENV=production ruby1.8 script/console
+  &gt; Role.create!(:name =&gt; &quot;Member&quot;, :kind =&gt; Role::KIND_MEMBER)  
+  &gt; Role.create!(:name =&gt; &quot;Administrator&quot;, :kind =&gt; Role::KIND_ADMIN)</pre></div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+
+
+<h3>Files</h3>
+
+<p>/etc/apache2/sites-available/gitorious<br />
+</p>
+
+<blockquote><p>  <br />
+  ServerName your.server.com  <br />
+  DocumentRoot /var/www/gitorious/public  <br />
+</p></blockquote>
+
+<p>/etc/apache2/sites-available/gitorious-ssl<br />
+</p>
+
+<blockquote class="posterous_medium_quote"><p>  </p><p>
+    
+   DocumentRoot /var/www/gitorious/public  <br />
+   SSLEngine on  <br />
+   SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem  <br />
+   SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key  <br />
+   BrowserMatch ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0  </p><p>
+    
+</p></blockquote>
+
+<p>/etc/init.d/stomp<br />
+</p>
+
+<blockquote><p>#!/bin/sh  <br />
+# Start/stop the stompserver  <br />
+#  <br />
+### BEGIN INIT INFO  <br />
+# Provides:          stomp  <br />
+# Required-Start:    $local_fs $remote_fs $network $syslog   <br />
+# Required-Stop:        <br />
+# Default-Start:     2 3 4 5  <br />
+# Default-Stop:      1  <br />
+# Short-Description: Stomp  <br />
+# Description:       Stomp  <br />
+### END INIT INFO  <br />
+</p>
+
+<p>test -f /usr/bin/stompserver || exit 0  <br />
+</p>
+
+<p>. /lib/lsb/init-functions  <br />
+</p>
+
+<p>case “$1” in  <br />
+start)  log_daemon_msg “Starting stompserver” “stompserver”  <br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>start-stop-daemon --start --name stompserver --startas /usr/bin/stompserver --background --user git
+     log_end_msg $?    
+    ;;</pre></div>
+</div>
+</div>
+</div>
+
+
+<p>stop)  log_daemon_msg “Stopping stompserver” “stompserver”  <br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>start-stop-daemon --stop --name stompserver
+     log_end_msg $?    
+     ;;</pre></div>
+</div>
+</div>
+</div>
+
+
+<p>restart) log_daemon_msg “Restarting stompserver” “stompserver”  <br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>start-stop-daemon --stop --retry 5 --name stompserver
+    start-stop-daemon --start --name stompserver --startas /usr/bin/stompserver --background --user git    
+    log_end_msg $?    
+    ;;</pre></div>
+</div>
+</div>
+</div>
+
+
+<p>status)  <br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>status_of_proc /usr/bin/stompserver stompserver &amp;&amp; exit 0 || exit $?
+    ;;</pre></div>
+</div>
+</div>
+</div>
+
+
+<p>*)      log_action_msg “Usage: /etc/init.d/stomp {start|stop|restart|status}”  <br />
+</p>
+
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>exit 2
+    ;;</pre></div>
+</div>
+</div>
+</div>
+
+
+<p>esac  <br />
+exit 0<br />
+</p></blockquote>
+
+<p>/etc/init.d/git-poller<br />
+</p>
+
+<blockquote class="posterous_medium_quote"><p>#!/bin/sh  <br />
+# Start/stop the git poller  <br />
+#  <br />
+### BEGIN INIT INFO  <br />
+# Provides:          git-poller  <br />
+# Required-Start:    stomp  <br />
+# Required-Stop:  <br />
+# Default-Start:     2 3 4 5  <br />
+# Default-Stop:      1  <br />
+# Short-Description: Gitorious poller  <br />
+# Description:       Gitorious poller  <br />
+### END INIT INFO  <br />
+</p>
+
+<p>/bin/su – git -c “cd /var/www/gitorious;RAILS_ENV=production script/poller $@”<br />
+</p></blockquote>
+</div></blockquote>
+
+<div class="posterous_quote_citation">via <a href="http://gitorious.org/gitorious/pages/UbuntuInstallation">gitorious.org</a></div>
+    <p></p></div>

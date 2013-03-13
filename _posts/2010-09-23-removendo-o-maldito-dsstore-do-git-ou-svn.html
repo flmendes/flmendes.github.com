@@ -1,0 +1,18 @@
+---
+layout: post
+title: Removendo o maldito ".DS_Store" do GIT ou SVN
+published: true
+date: 2010-09-23
+categories:
+- git
+- svn
+posterous_url: http://flmendes.posterous.com/removendo-o-maldito-dsstore-do-git-ou-svn
+posterous_slug: removendo-o-maldito-dsstore-do-git-ou-svn
+---
+<p>Uma pasta que sempre me enche o saco &eacute; o <span style="font-family: MarkerFelt-Thin; font-size: 16px;">".DS_Store"</span>, eu sei que para remover essa pasta basta adicionar as seguinte linhas em seu arquivo <span style="font-family: MarkerFelt-Thin; font-size: 16px;">.gitignore</span>.</p>
+<p><span style="font-family: MarkerFelt-Thin; font-size: 16px;">.DS_Store</span></p>
+<p>Parece bem simples, mas &eacute; algo que sempre esque&ccedil;o de fazer antes do primeiro commit do projeto.</p>
+<p>Se voc&ecirc; esqueceu de adicionar o diret&oacute;rio em seu <span style="font-family: MarkerFelt-Thin; font-size: 16px;">.gitignore</span> e realizou um commit/push, segue uma dica para remover esta pasta.</p>
+<p>Execute o seguinte comando:&nbsp;<span style="font-family: MarkerFelt-Thin; font-size: 16px;">find . -name *.DS_Store -type f -exec git rm &nbsp;-rf {} \;</span></p>
+<p>Esse comando s&oacute; funciona no Linux/Mac e afins. O comando ir&aacute; pesquisar nos diret&oacute;rios do seu projeto e remover o <span style="font-family: MarkerFelt-Thin; font-size: 16px;">.DS_Store</span> do controle de vers&atilde;o.</p>
+<p>Agora basta adicionar as linhas no <span style="font-family: MarkerFelt-Thin; font-size: 16px;">.gitignore</span> e efetuar um commit/push, o mesmo se aplica para o svn.</p>

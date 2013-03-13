@@ -1,0 +1,77 @@
+---
+layout: post
+title: ! ' Pythonologia  » Ambiente Isolado para Python com virtualenv - Python, open-source
+  e desenvolvimento'
+published: true
+date: 2010-02-08
+categories:
+- python
+posterous_url: http://flmendes.posterous.com/pythonologia-ambiente-isolado-para-python-com
+posterous_slug: pythonologia-ambiente-isolado-para-python-com
+---
+<div class="posterous_bookmarklet_entry">
+      <blockquote><div>				
+
+							<h3><a href="http://pythonologia.org/2008/03/03/ambiente-isolado-para-python-com-virtualenv/" title="Ambiente Isolado para Python com virtualenv" rel="bookmark">Ambiente Isolado para Python com virtualenv</a></h3>
+			<p>Postado por Osvaldo Santana</p>
+			<p>Boa parte do meu dia-a-dia de desenvolvedor é gasto em proramando em <a href="http://www.pythonbrasil.com.br">Python</a>. Gosto de estar sempre atualizado com o que há de novo para essa linguagem e para isso saio instalando tudo o que aparece para para experimentar. Além de Python o Linux também faz parte da minha vida e uso ele quase 100% do meu tempo (em vias de mudar para o OS X).</p>
+<p>A plataforma Python, de uns tempos pra cá, vêm padronizando os arquivos <a href="http://peak.telecommunity.com/DevCenter/PythonEggs" title="Python Eggs">Eggs</a> para distribuição de aplicações e bibliotecas. Em conjunto com o <a href="http://pypi.python.org/pypi">PyPI (Python Package Index)</a> e o utilitário <tt>easy_install</tt> (que é parte do <em>framework</em> <a href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a>) é possível instalar componentes Python com apenas um comando.</p>
+<p>A facilidade para instalar esses pacotes é enorme mas removê-los é chato porque envolve a edição de alguns arquivos texto, e ter permissão de escrita no diretório de bibliotecas do Python (permissão que também é necessária para a instalar o pacote).</p>
+<p>Cada pacote instalado acrescenta uma entrada ao <tt>sys.path</tt> do Python fazendo com que o tempo para importar um módulo aumente um <b>pouco</b> mais (cada uma dessas entradas é consultada em busca do módulo e se você der uma olhada na saída do <tt>strace</tt> verá que a procura por um módulo envolve vários passos).</p>
+<p>O Linux que eu uso (<a href="http://www.ubuntu.com/" title="Ubuntu Linux">Ubuntu</a>) precisa ter um ambiente Python estável, já que grande parte de suas aplicações roda em cima dessa linguagem, ou seja, danificar esse ambiente pode atrapalhar todo o funcionamento do sistema.</p>
+<p>Isso tudo junto com o fato de que adoro experimentar as novidades do mundo Python faziam com que meu Python ficasse totalmente poluído com versões <em>bleeding edge</em> de bibliotecas que muitas vezes são incompatíveis com as versões “oficialmente suportadas” pelo pessoal que faz o Ubuntu.</p>
+<p>Seria necessário um jeito fácil de se criar ambientes isolados do Python usando como base a própria instalação do sistema para que eu pudesse fazer esses testes e experiências sem danificá-lo. Não ficar replicando cópias de Python pela máquina também seria interessante.</p>
+<p><b>E então surge a solução…</b></p>
+<p>Parece engraçado mas no mesmo dia que perdi horas “arrumando” o Python em meu computador eu li no blog do <a href="http://blog.ianbicking.org/" title="Blog do Ian Bicking">Ian Bicking</a> que ele tinha desenvolvido um programinha que fazia exatamente o que eu precisava: o <a href="http://pypi.python.org/pypi/virtualenv">virtualenv</a>.</p>
+<p>O uso do <tt>virtualenv</tt> é extremamente simples e direto. Basta instalar, executar e ativar.</p>
+<p><b>Instalação</b></p>
+<p>Se você está usando Ubuntu ou Debian:</p>
+<div class="CodeRay">
+  <div class="code"><pre>sudo apt-get install python-setuptools
+sudo easy_install virtualenv</pre></div>
+</div>
+
+<p>Se não está:</p>
+<div class="CodeRay">
+  <div class="code"><pre>wget http://peak.telecommunity.com/dist/ez_setup.py
+sudo python ez_setup.py</pre></div>
+</div>
+
+<p><b>Criando o ambiente</b></p>
+<p>Para criar um ambiente basta executar o <tt>virtualenv</tt> e passar como parâmetro o nome do diretório onde tal ambiente será instalado:</p>
+<div class="CodeRay">
+  <div class="code"><pre>virtualenv meu_python</pre></div>
+</div>
+
+<p>Esse comando irá criar um diretório chamado <tt>meu_python</tt> com os diretórios:</p>
+<ul>
+<li><tt>bin</tt> – executável do interpretador, o script easy_install e o arquivo <tt>activate</tt> que será usado para “ativar” o ambiente. Quando o ambiente está “ativo” os executáveis dos aplicativos Python são instalados aqui também.</li>
+<li><tt>lib</tt> – a árvore com links simbólicos e/ou cópias de todos os módulos e bibliotecas do Python. Quando esse ambiente está “ativo” os módulos e pacotes serão sempre instalados dentro desse diretório.</li>
+<li><tt>include</tt> – dentro desse diretório estão os links simbólicos para todos os <em>headers</em> do Python que são necessários para se compilar extensões escritas em C para ele.</li>
+</ul>
+<p><b>Ativando o ambiente para usar</b></p>
+<p>Para usar esse ambiente recém-criado é necessário ativá-lo. para isso basta executar o seguinte comando:</p>
+<div class="CodeRay">
+  <div class="code"><pre>source meu_python/bin/activate</pre></div>
+</div>
+
+<p>Esse comando irá adicionar o diretório <tt>meu_python/bin</tt> no <tt>PATH</tt> da sua sessão e mudar o <em>prompt</em> para que você possa distinguir visualmente quando este ambiente está ativo.</p>
+<p><b>Atenção:</b> O <tt>virtualenv</tt> não cria o link simbólico <tt>python -&gt; python2.5</tt>, portanto, se precisar dele você terá que criá-lo à mão com o seguinte comando</p>
+<div class="CodeRay">
+  <div class="code"><pre>(cd meu_python/bin; ln -s python2.5 python; hash -r)</pre></div>
+</div>
+
+<p>Depois disso é só sair instalando as coisas sem a menor preocupação.</p>
+<p>PS. Eu não testei o <tt>virtualenv</tt> no Windows nem no Mac OS X mas no site do projeto é possível notar que tem gente usando ele também nessas duas plataformas, portanto, eu acho que ele também funcione corretamente nelas.</p>
+
+
+
+
+			
+				
+	
+			<br />	
+			
+
+		</div></blockquote><div class="posterous_quote_citation">via <a href="http://pythonologia.org/2008/03/03/ambiente-isolado-para-python-com-virtualenv/">pythonologia.org</a></div>
+    <p></p></div>

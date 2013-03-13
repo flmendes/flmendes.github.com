@@ -1,0 +1,88 @@
+---
+layout: post
+title: Scala for the Impatient
+published: true
+date: 2011-01-31
+categories: []
+posterous_url: http://flmendes.posterous.com/scala-for-the-impatient
+posterous_slug: scala-for-the-impatient
+---
+<div class="posterous_bookmarklet_entry">
+      <blockquote><div><span></span><p>In 1995, I got a call from Gary Cornell who told me that we were going to write a Java book. That surprised me—I didn't know any Java, and I was pretty sure that Gary didn't know it either. But Gary knew that Java would be big. So we set out to write, as fast as we could, the first Java book that showed how to write real code. (There already were a couple of books out, such as the regrettable “Teach yourself Java in 21 days”, but they focused on giving the <em>illusion of knowledge</em>.) Core Java appeared a few weeks after the Java 1.0 release, and it was an instant best-seller. A 9th edition will be out later this year, covering Java 7.</p>
+<p><img src="http://www.java.net/sites/default/files/java-21-days_1.jpg" height="150" alt="" style="float: right;" width="150" /></p>
+<p>When I first heard about Scala, nobody told me that it was going to be big, so I didn't write a book. Of course, other people did. I got a few, but I found that I never read any of them. I just wrote code and read blogs whenever I got stuck. And I spent way too much time on stackoverflow.com.</p>
+<p>What was wrong with the books? For me, two things. First, I didn't care to be told that I had sinned and must repent, and embrace the functional style in all its goodness, and only then could I hope to lead a useful life. More importantly, I was just too impatient. I know what a loop and a class and a function is. I don't want to read that stuff again.</p>
+<p>So, why not just stick with the blogs? There are <a href="http://blogs.sun.com/sundararajan/entry/scala_for_java_programmers" target="_blank">several</a> <a href="http://www.ibm.com/developerworks/views/java/libraryview.jsp?search_by=scala neward" target="_blank">good</a> <a href="http://www.codecommit.com/blog/scala/scala-for-java-refugees-part-1" target="_blank">blogs</a> that try to get a Java programmer up to speed with Scala, and I learned a lot from them. But there is something to be said about a well-researched book. In a blog, the author gets away with omissions, half-truths and outright errors. In a book, one expects correct and complete information, and a thoughtfully prepared learning path.</p>
+<p style="clear: both;">What I need is the analog of <a href="http://savannah.gnu.org/projects/teximpatient/" target="_blank">TEX for the Impatient</a>, an admirable book by Paul Abrahams that courageously positioned itself to those “for whom TEX is a useful tool rather than a primary interest” . That describes how I feel about Scala.</p>
+<p><img src="http://www.java.net/sites/default/files/tex-imatient_1.jpg" height="150" alt="" style="float: right;" width="150" /></p>
+<p>The trouble is, nobody wrote such a book, and it looks like I'll just have to write it myself. I drafted a proposal in which I placed the various topics into five layers:</p>
+<ol>
+    <li>Basic Scala</li>
+    <li>Intermediate Functional Programming</li>
+    <li>Intermediate OO Programming</li>
+    <li>Advanced Scala</li>
+    <li>Esoteric Scala</li>
+</ol>
+<p>You can do a lot of useful work just with the first level, which you can pick up quite quickly. After the second level, you should be able to use a typical Scala library effectively (such as the Scala ccollections).</p>
+<p>I was delighted to see a discussion on <a href="http://www.scala-lang.org/node/8610" target="_blank">four Scala language levels</a> that was pretty similar to my thinking. Moreover, after Martin Odersky enumerated his four levels of Scala wisdom, <a href="http://blog.tmorris.net/critique-of-oderskys-scala-levels/" target="_blank">an irate Tony Morris complained</a> that there is a fifth level that is way higher (which presumably he has attained). So maybe I am on to something with the advanced/esoteric distinction :-)</p>
+<p>I sent out a couple of sample chapters for review, and the reviewer complained that a fair amount of the material was strange and out of place. I looked at the offending sections. They were about file processing, Java interop issues, regex pitfalls, and similar stuff. All practical, hands-on topics for getting a job done. I guess for the reviewer, Scala was a primary interest rather than a useful tool. Hmmm--now I really think I am on to something.</p>
+<p>As I started writing, I was surprised how difficult it is to organize material for the impatient. Consider the task of writing a class. Ignoring constructors for now, let's say I start with</p>
+<div class="CodeRay">
+  <div class="code"><div class="CodeRay">
+  <div class="code"><pre>class Person {
+  ??? name: String
+  ...
+}</pre></div>
+</div>
+</div>
+</div>
+
+<p>Of course, all the books tell me the difference between <code>val</code> and <code>var</code>. Here I want to be able to change the name, so I choose <code>var</code>. How do I decide whether to use a plain <code>var</code>, <code>private var</code>, <code>private[Person] var</code> or <code>private[this] var</code>? I tried looking at several of books, but I wasn't patient enough to find the answer, or even a clear explanation of the differences. <a href="http://programming-scala.labs.oreilly.com/ch05.html" target="_blank">This book</a>, for example, states that <code>private var</code> means that no getters/setters are generated, which can be quickly refuted by running <code>javap -private</code>. This seems such a basic question, and I can tell from the blogs and mailing lists that people are confused about it. I want to give clear, truthful, and easy-to-find guidance.</p>
+<table border="0" style="">
+          
+    
+        <tr>
+            <th>Scala Field</th>
+            <th>Generated Methods</th>
+            <th>When to Use</th>
+        </tr>
+        <tr>
+            <td><code>val name</code></td>
+            <td>public <code>name</code></td>
+            <td rowspan="2">To implement a property that is publicly accessible and         backed by a field.</td>
+        </tr>
+        <tr>
+            <td><code>var name</code></td>
+            <td>public <code>name</code>, <code>name_=</code></td>
+        </tr>
+        <tr>
+            <td><code>@BeanProperty val name</code></td>
+            <td>public <code>name</code>, <code>getName()</code></td>
+            <td rowspan="2">To interoperate with Java beans.</td>
+        </tr>
+        <tr>
+            <td><code>@BeanProperty var name</code></td>
+            <td>public <code>name</code>, <code>getName()</code>,         <code>name_=</code>, <code>setName(...)</code></td>
+        </tr>
+        <tr>
+            <td><code>private val/var name</code></td>
+            <td>private <code>name</code>, <code>name_=</code></td>
+            <td rowspan="2">To confine the field to the methods of a class, just like         in Java. Use this (without the <code>[<var>Classname</var>]</code>         qualifier) if you don't want a public property.</td>
+        </tr>
+        <tr>
+            <td><code>private[Person] val/var name</code></td>
+            <td>Implementation-specific</td>
+        </tr>
+        <tr>
+            <td><code>private[this] val/var name</code></td>
+            <td>None</td>
+            <td>To confine the field to methods invoked on the same object. Not         generally useful.</td>
+        </tr>
+    
+</table>
+<p>In a few weeks, first chapter drafts will be available on Safari, and I'll also post some blogs . If there anything that you are impatient to see discussed in a Scala book, please comment!</p>
+<p> </p>
+<p> </p></div></blockquote>
+
+<div class="posterous_quote_citation">via <a href="http://weblogs.java.net/blog/cayhorstmann/archive/2011/01/28/scala-impatient">weblogs.java.net</a></div>
+    <p></p></div>
